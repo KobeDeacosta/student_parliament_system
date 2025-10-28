@@ -1,0 +1,16 @@
+#result {
+    margin-top: 20px;
+    background: #28a745;
+    color: white;
+    display: inline-block;
+    padding: 15px 25px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    transition: 0.3s;
+    opacity: 0;
+  }
+  
+  #result.show {
+    opacity: 1;
+  }
+  

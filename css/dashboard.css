@@ -1,0 +1,82 @@
+/* Background setup */
+.bg-cover {
+    background-image: url("../images/SP.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+}
+
+/* Dark overlay for readability */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* Text box styling */
+.welcome-box {
+    position: relative;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Sidebar hover style */
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
+/* Smooth transitions */
+.nav-link, .btn {
+    transition: 0.3s ease;
+}
+
+/* Sidebar Container */
+.bg-dark {
+    background-color: #0b1622 !important; /* dark navy tone */
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Menu Title */
+  .bg-dark h4 {
+    font-size: 26px;              /* 🔥 Larger menu title */
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+  
+  /* Sidebar Links */
+  .nav-link {
+    font-size: 20px;              /* 🔥 Larger text for links */
+    font-weight: 600;
+    color: #f1f1f1 !important;
+    padding: 12px 0;
+    transition: all 0.3s ease;
+    display: block;
+  }
+  
+  .nav-link:hover {
+    color: #ffffff !important;
+    background-color: #1a2b3d;    /* Subtle hover highlight */
+    padding-left: 10px;           /* Small movement on hover */
+    border-radius: 8px;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+  }
+  
+  /* Logout Button */
+  .btn-danger {
+    font-size: 18px;              /* 🔥 Slightly bigger button text */
+    font-weight: 600;
+    padding: 10px 0;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+  }
+  
