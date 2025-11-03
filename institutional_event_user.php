@@ -2,27 +2,27 @@
 session_start();
 include('dbconnection.php');
 
-// 🔒 Require login
+//Require login
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-// 🗓 Fetch events (for all departments)
+//Fetch events (for all departments)
 try {
     $today = date('Y-m-d');
 
-    // Ongoing Events (event_date = today)
+    // Ongoing na Events
     $ongoingStmt = $pdo->prepare("SELECT * FROM institutional_events WHERE event_date = ? ORDER BY event_date ASC");
     $ongoingStmt->execute([$today]);
     $ongoingEvents = $ongoingStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Upcoming Events (event_date > today)
+    // Upcoming na Events
     $upcomingStmt = $pdo->prepare("SELECT * FROM institutional_events WHERE event_date > ? ORDER BY event_date ASC");
     $upcomingStmt->execute([$today]);
     $upcomingEvents = $upcomingStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Past Events (event_date < today)
+    // natapos Events
     $pastStmt = $pdo->prepare("SELECT * FROM institutional_events WHERE event_date < ? ORDER BY event_date DESC");
     $pastStmt->execute([$today]);
     $pastEvents = $pastStmt->fetchAll(PDO::FETCH_ASSOC);

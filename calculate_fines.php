@@ -5,7 +5,7 @@ date_default_timezone_set('Asia/Manila');
 $today = date('Y-m-d');
 
 try {
-    // ✅ Get all attendance records for today
+    // all attendance sa araw na yun
     $stmt = $pdo->prepare("
         SELECT a.*, u.username AS name, u.id AS user_id, a.event_id
         FROM attendance a
@@ -24,18 +24,17 @@ try {
         $missing = 0;
         $fields = ['am_in', 'am_out', 'pm_in', 'pm_out'];
 
-        // Count missing scans
         foreach ($fields as $f) {
             if (empty($row[$f]) || $row[$f] === '0000-00-00 00:00:00') {
                 $missing++;
             }
         }
 
-        // Only add fines if there are missing scans
+        
         if ($missing > 0) {
-            $fineAmount = $missing * 50; // ₱50 per missing scan
+            $fineAmount = $missing * 50;
 
-            // Check if fine already exists
+            
             $check = $pdo->prepare("
                 SELECT id FROM fines 
                 WHERE user_id = ? AND event_id = ? AND date = ?
@@ -44,7 +43,7 @@ try {
             $existing = $check->fetch(PDO::FETCH_ASSOC);
 
             if ($existing) {
-                // Update existing fine
+               
                 $update = $pdo->prepare("
                     UPDATE fines 
                     SET missing_scans = ?, total_fine = ?
@@ -52,7 +51,7 @@ try {
                 ");
                 $update->execute([$missing, $fineAmount, $existing['id']]);
             } else {
-                // Insert new fine
+                
                 $insert = $pdo->prepare("
                     INSERT INTO fines (user_id, event_id, date, missing_scans, total_fine)
                     VALUES (?, ?, ?, ?, ?)
@@ -65,6 +64,6 @@ try {
     echo "✅ Fines calculated successfully for $today.";
 
 } catch (PDOException $e) {
-    echo "❌ Database Error: " . htmlspecialchars($e->getMessage());
+    echo "Database Error: " . htmlspecialchars($e->getMessage());
 }
 ?>

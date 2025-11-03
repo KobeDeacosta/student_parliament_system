@@ -2,7 +2,7 @@
 session_start();
 include('dbconnection.php');
 
-// ✅ Check login
+//Check login
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
     header("Location: login.php");
     exit();
@@ -25,16 +25,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 <body>
 
 <div class="container py-5">
-  <h2 class="text-center mb-4">📋 Department Attendance Records For Admin</h2>
+  <h2 class="text-center mb-4">📋 Department Attendance Records For Users</h2>
 
-  <!-- ✅ Department Dropdown -->
+  <!-- Department Dropdown -->
   <div class="mb-4 text-center">
     <label for="departmentSelect" class="form-label fw-bold">Select Department:</label>
     <select id="departmentSelect" class="form-select w-50 mx-auto">
       <option value="">-- Select Department --</option>
       <?php
       try {
-          // ✅ Fetch departments from 'departments' table
           $query = $pdo->query("SELECT department_name FROM departments ORDER BY department_name ASC");
           $departments = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -53,7 +52,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
     </select>
   </div>  
 
-  <!-- ✅ Attendance Table -->
+  <!-- Attendance Table -->
   <div id="attendanceSection" style="display:none;">
     <table class="table table-bordered table-striped align-middle text-center shadow-sm">
       <thead class="table-dark">

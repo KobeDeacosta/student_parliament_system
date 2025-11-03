@@ -2,17 +2,16 @@
 session_start();
 include('dbconnection.php');
 
-// 🔒 Require admin login
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit();
 }
 
 try {
-    // 👥 Total registered students
+    // kung ilan yung nagregister na user
     $students = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'student'")->fetchColumn();
 
-    // 🎉 Students who attended at least one event OR flagged 'MISS'
+    // yung mga umattend kahit isa
     $attended = $pdo->query("
         SELECT COUNT(DISTINCT user_id)
         FROM attendance
@@ -24,11 +23,11 @@ try {
 
     $notAttended = $students - $attended;
 
-    // 💰 Fines summary
+    // summary ng fines
     $finesTotal = $pdo->query("SELECT SUM(total_fine) FROM fines")->fetchColumn() ?? 0;
     $finedStudents = $pdo->query("SELECT COUNT(DISTINCT user_id) FROM fines")->fetchColumn();
 
-    // 📊 Fines per Event (all events)
+    //  per event fines
     $fineDataStmt = $pdo->query("
         SELECT e.event_name, SUM(f.total_fine) AS total
         FROM institutional_events e
@@ -38,7 +37,7 @@ try {
     ");
     $fineData = $fineDataStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 🎓 Attendance per Event (count all attendance including 'MISS')
+    //  Attendance per Event (count all attendance including 'MISS')
     $attendDataStmt = $pdo->query("
         SELECT e.event_name, COUNT(DISTINCT a.user_id) AS attendees
         FROM institutional_events e
@@ -59,6 +58,15 @@ try {
     <title>📊 Admin Dashboard | Student Parliament</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        #attendancePieChart {
+            max-width: 1000px;
+            max-height: 1000px;
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -130,8 +138,8 @@ try {
         <div class="col-md-12 mb-4">
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white fw-bold">Attendance Overview</div>
-                <div class="card-body">
-                    <canvas id="attendancePieChart" height="150"></canvas>
+                <div class="card-body text-center">
+                    <canvas id="attendancePieChart" width="250" height="250"></canvas>
                 </div>
             </div>
         </div>
@@ -139,7 +147,7 @@ try {
 </div>
 
 <script>
-// 🎉 Attendance per Event
+//  Attendance per Event
 const attendData = {
     labels: <?= json_encode(array_column($attendData, 'event_name')); ?>,
     datasets: [{
@@ -175,7 +183,7 @@ new Chart(document.getElementById('finesChart'), {
     options: { scales: { y: { beginAtZero: true } } }
 });
 
-// 🥧 Attendance Pie Chart
+//  Attendance Pie Chart
 const attendancePie = {
     labels: ['Attended', 'Not Attended'],
     datasets: [{
@@ -188,11 +196,15 @@ const attendancePie = {
 
 new Chart(document.getElementById('attendancePieChart'), {
     type: 'pie',
-    data: attendancePie
+    data: attendancePie,
+    options: {
+        responsive: false,
+        maintainAspectRatio: false
+    }
 });
 </script>
 
-<!-- 🟢 Back to Dashboard -->
+<!--  Back to Dashboard -->
 <div class="text-center mt-4">
     <a href="student-dashboard.php" class="btn btn-secondary">⬅ Back to Dashboard</a>
 </div>

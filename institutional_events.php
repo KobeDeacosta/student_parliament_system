@@ -2,26 +2,22 @@
 session_start();
 include('dbconnection.php');
 
-// 🟢 Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-// 🟢 Initialize variables
 $events = [];
 $editMode = false;
 $editEvent = [];
 $today = date('Y-m-d');
 
-// 🟢 AUTO-DEACTIVATE past events (safety check)
 try {
     $pdo->query("UPDATE institutional_events SET status = 'inactive' WHERE event_date < '$today'");
 } catch (PDOException $e) {
     die("Error auto-deactivating past events: " . $e->getMessage());
 }
 
-// 🟢 Handle Add Event
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_event'])) {
     $event_name = trim($_POST['event_name']);
     $event_date = trim($_POST['event_date']);
@@ -40,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_event'])) {
     }
 }
 
-// 🟢 Handle Delete Event
 if (isset($_GET['delete'])) {
     $id = (int) $_GET['delete'];
     try {
@@ -54,7 +49,6 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// 🟢 Handle Edit Request (load event data)
 if (isset($_GET['edit'])) {
     $editMode = true;
     $id = (int) $_GET['edit'];
@@ -67,7 +61,6 @@ if (isset($_GET['edit'])) {
     }
 }
 
-// 🟢 Handle Update Event
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_event'])) {
     $id = $_POST['event_id'];
     $event_name = trim($_POST['event_name']);
@@ -87,14 +80,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_event'])) {
     }
 }
 
-// 🟢 Handle Activate Event
 if (isset($_GET['activate'])) {
     $eventId = intval($_GET['activate']);
     try {
-        // Deactivate all other events
+        
         $pdo->query("UPDATE institutional_events SET status = 'inactive'");
 
-        // Activate selected event only if not a past event
         $stmt = $pdo->prepare("UPDATE institutional_events SET status = 'active' WHERE id = ? AND event_date >= ?");
         $stmt->execute([$eventId, $today]);
 
@@ -106,15 +97,12 @@ if (isset($_GET['activate'])) {
     }
 }
 
-// 🟢 Handle Deactivate Event (stop event & flag missing attendance)
 if (isset($_GET['deactivate'])) {
     $eventId = intval($_GET['deactivate']);
     try {
-        // Set event to inactive
         $stmt = $pdo->prepare("UPDATE institutional_events SET status = 'inactive' WHERE id = ?");
         $stmt->execute([$eventId]);
 
-        // Flag missing attendance for this event (optional if you have attendance table)
         $stmt = $pdo->prepare("
             UPDATE attendance 
             SET am_in = IFNULL(am_in,'MISS'), 
@@ -133,7 +121,6 @@ if (isset($_GET['deactivate'])) {
     }
 }
 
-// 🟢 Fetch All Events
 try {
     $stmt = $pdo->query("SELECT * FROM institutional_events ORDER BY event_date DESC");
     $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -158,7 +145,6 @@ try {
         <?php unset($_SESSION['msg_success']); ?>
     <?php endif; ?>
 
-    <!-- 🟢 Add / Edit Form -->
     <form method="POST" class="row g-3 mb-4">
         <input type="hidden" name="event_id" value="<?= $editMode ? htmlspecialchars($editEvent['id']) : '' ?>">
 
@@ -185,7 +171,6 @@ try {
         </div>
     </form>
 
-    <!-- 🟢 Event Table -->
     <div class="card shadow-sm">
         <div class="card-body">
             <table class="table table-striped table-hover align-middle">
@@ -234,7 +219,7 @@ try {
         </div>
     </div>
 
-    <!-- 🟢 Back to Dashboard -->
+    <!--  Back to Dashboard -->
     <div class="text-center mt-4">
         <a href="student-dashboard.php" class="btn btn-secondary">⬅ Back to Dashboard</a>
     </div>

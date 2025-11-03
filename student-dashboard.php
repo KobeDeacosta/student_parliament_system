@@ -2,7 +2,7 @@
 session_start();
 include('dbconnection.php');
 
-// 🟢 Check if user is logged in
+// icheck if nakalog in na ang student
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();

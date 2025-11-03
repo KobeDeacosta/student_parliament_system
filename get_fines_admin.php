@@ -28,7 +28,6 @@ if (!$fines) {
   exit;
 }
 
-// group by department
 $currentDept = "";
 foreach ($fines as $fine) {
   if ($currentDept != $fine['department']) {

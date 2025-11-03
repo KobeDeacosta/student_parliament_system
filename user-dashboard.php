@@ -2,13 +2,12 @@
 session_start();
 include('dbconnection.php');
 
-// 🔒 Check if logged in
+//Check if logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-// 🟢 Fetch user info
 try {
     $stmt = $pdo->prepare("SELECT id_number, username, email, role, department FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
@@ -18,20 +17,16 @@ try {
         die("User not found.");
     }
 
-    // 🟢 Define QR file path
     $qrDir = "qrcodes/";
     $qrFile = $qrDir . $user['id_number'] . ".png";
 
-    // 🟢 Create folder if missing
     if (!is_dir($qrDir)) {
         mkdir($qrDir, 0777, true);
     }
 
-    // 🟢 Generate QR code if not existing
     if (!file_exists($qrFile)) {
         include('phpqrcode/qrlib.php');
 
-        // Include ID number, name, and department
         $qrText = $user['id_number'] . "&" . $user['username'] . "&" . $user['department'];
 
         QRcode::png($qrText, $qrFile, QR_ECLEVEL_L, 5);
@@ -76,7 +71,7 @@ try {
                          class="border p-2 rounded bg-white shadow-sm" width="200">
                     <p class="mt-2"><strong>ID Number:</strong> <?= htmlspecialchars($user['id_number']); ?></p>
 
-                    <!-- 🟢 Download Button -->
+                    <!--Download Button -->
                     <a href="<?= htmlspecialchars($qrFile); ?>" download="<?= htmlspecialchars($user['id_number']); ?>_QR.png"
                        class="btn btn-outline-primary btn-sm mt-2">
                        ⬇️ Download QR Code

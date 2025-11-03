@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'dbconnection.php'; // uses $pdo
+include 'dbconnection.php';
 
 if (isset($_POST['btnSubmit'])) {
     $email = $_POST['email'];
@@ -17,7 +17,6 @@ if (isset($_POST['btnSubmit'])) {
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role'];
 
-                // ✅ Role-based redirect
                 if ($user['role'] === 'admin') {
                     header("Location: student-dashboard.php");
                 } else {

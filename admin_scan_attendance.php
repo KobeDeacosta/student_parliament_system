@@ -2,7 +2,7 @@
 session_start();
 include('dbconnection.php');
 
-// ✅ Admin access only
+// Admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit();
@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 if (isset($_POST['qrData']) && isset($_POST['attendance_type'])) {
     $qrData = trim($_POST['qrData']);
-    $attendance_type = trim($_POST['attendance_type']); // am_in, am_out, pm_in, pm_out
+    $attendance_type = trim($_POST['attendance_type']);
 
     // Split QR data: "ID&Fullname&Department"
     $parts = explode('&', $qrData);
@@ -19,7 +19,7 @@ if (isset($_POST['qrData']) && isset($_POST['attendance_type'])) {
     $department = $parts[2] ?? '';
 
     if (!empty($id_number) && !empty($fullname)) {
-        // Check if student exists
+        // Check kung pumasok ang student
         $check = $pdo->prepare("SELECT id FROM users WHERE id_number = ?");
         $check->execute([$id_number]);
         $user = $check->fetch(PDO::FETCH_ASSOC);
@@ -27,7 +27,6 @@ if (isset($_POST['qrData']) && isset($_POST['attendance_type'])) {
         if ($user) {
             $user_id = $user['id'];
 
-            // Get latest active event
             $eventQuery = $pdo->query("
                 SELECT id, event_name FROM institutional_events
                 WHERE status = 'active'
@@ -40,7 +39,6 @@ if (isset($_POST['qrData']) && isset($_POST['attendance_type'])) {
                 $now = date('Y-m-d H:i:s');
                 $today = date('Y-m-d');
 
-                // Check if record exists already
                 $checkAttendance = $pdo->prepare("
                     SELECT * FROM attendance
                     WHERE user_id = ? AND event_id = ? AND date = ?
@@ -49,11 +47,9 @@ if (isset($_POST['qrData']) && isset($_POST['attendance_type'])) {
                 $record = $checkAttendance->fetch(PDO::FETCH_ASSOC);
 
                 if ($record) {
-                    // ⚠ Prevent duplicate logs for same field
                     if (!empty($record[$attendance_type])) {
                         $_SESSION['msg_error'] = "⚠ {$attendance_type} already recorded for $fullname!";
                     } else {
-                        //  Update existing record
                         $update = $pdo->prepare("
                             UPDATE attendance 
                             SET $attendance_type = ?, scan_time = ?, status = 'Present'
@@ -63,7 +59,6 @@ if (isset($_POST['qrData']) && isset($_POST['attendance_type'])) {
                         $_SESSION['msg_success'] = "✅ Updated $attendance_type for $fullname!";
                     }
                 } else {
-                    //  Insert new record for first scan
                     $insert = $pdo->prepare("
                         INSERT INTO attendance (user_id, name, department, event_id, scan_time, status, date, $attendance_type)
                         VALUES (?, ?, ?, ?, ?, 'Present', ?, ?)
@@ -72,14 +67,12 @@ if (isset($_POST['qrData']) && isset($_POST['attendance_type'])) {
                     $_SESSION['msg_success'] = "✅ First attendance record saved for $fullname!";
                 }
 
-                //  Recheck attendance after update to compute fines
                 $stmt = $pdo->prepare("
                     SELECT * FROM attendance WHERE user_id = ? AND event_id = ? AND date = ?
                 ");
                 $stmt->execute([$user_id, $event_id, $today]);
                 $attendance = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                // Compute missing scans
                 $missing = 0;
                 if (empty($attendance['am_in']))  $missing++;
                 if (empty($attendance['am_out'])) $missing++;
@@ -88,7 +81,6 @@ if (isset($_POST['qrData']) && isset($_POST['attendance_type'])) {
 
                 $fineAmount = $missing * 50;
 
-                //  Insert or update fines
                 $checkFine = $pdo->prepare("
                     SELECT * FROM fines WHERE user_id = ? AND event_id = ? AND date = ?
                 ");
@@ -113,7 +105,6 @@ if (isset($_POST['qrData']) && isset($_POST['attendance_type'])) {
                         $insertFine->execute([$user_id, $event_id, $today, $missing, $fineAmount]);
                     }
                 } else {
-                    //  If no missing scans and fine exists → remove it
                     if ($existingFine) {
                         $deleteFine = $pdo->prepare("DELETE FROM fines WHERE id = ?");
                         $deleteFine->execute([$existingFine['id']]);
@@ -124,10 +115,10 @@ if (isset($_POST['qrData']) && isset($_POST['attendance_type'])) {
                 $_SESSION['msg_error'] = "⚠ No active event found.";
             }
         } else {
-            $_SESSION['msg_error'] = "❌ Student not found.";
+            $_SESSION['msg_error'] = "Student not found.";
         }
     } else {
-        $_SESSION['msg_error'] = "❌ Invalid or incomplete QR data.";
+        $_SESSION['msg_error'] = "Invalid or incomplete QR data.";
     }
 
     header("Location: admin_scan_attendance.php");

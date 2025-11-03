@@ -14,7 +14,7 @@ try {
     ");
     $fines = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die("❌ Database Error: " . htmlspecialchars($e->getMessage()));
+    die("Database Error: " . htmlspecialchars($e->getMessage()));
 }
 ?>
 
@@ -54,7 +54,7 @@ try {
             <?php endif; ?>
         </tbody>
     </table>
-    <!-- 🟢 Back to Dashboard -->
+    <!--Back to Dashboard -->
     <div class="text-center mt-4">
         <a href="student-dashboard.php" class="btn btn-secondary">⬅ Back to Dashboard</a>
     </div>

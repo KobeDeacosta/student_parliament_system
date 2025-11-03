@@ -24,7 +24,7 @@ try {
 <title>Announcements | Student Parliament</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-/* Facebook-style card */
+    
 .announcement-card {
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);

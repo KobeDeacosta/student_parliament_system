@@ -14,7 +14,7 @@ $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$user) {
-    die("❌ Student not found.");
+    die("Student not found.");
 }
 
 $id_number = $user['id_number'];

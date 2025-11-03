@@ -2,18 +2,15 @@
 session_start();
 include('dbconnection.php');
 
-// 🔒 Require admin login
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit();
 }
 
-// 🟢 Initialize variables
 $announcements = [];
 $editMode = false;
 $editAnnounce = [];
 
-// 🟢 Handle Add Announcement
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_announcement'])) {
     $title = trim($_POST['title']);
     $content = trim($_POST['content']);
@@ -32,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_announcement'])) 
     }
 }
 
-// 🟢 Handle Delete Announcement
 if (isset($_GET['delete'])) {
     $id = intval($_GET['delete']);
     try {
@@ -46,7 +42,6 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// 🟢 Handle Edit Request
 if (isset($_GET['edit'])) {
     $editMode = true;
     $id = intval($_GET['edit']);
@@ -59,7 +54,6 @@ if (isset($_GET['edit'])) {
     }
 }
 
-// 🟢 Handle Update Announcement
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_announcement'])) {
     $id = $_POST['announcement_id'];
     $title = trim($_POST['title']);
@@ -78,7 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_announcement']
     }
 }
 
-// 🟢 Handle Activate / Deactivate
 if (isset($_GET['toggle'])) {
     $id = intval($_GET['toggle']);
     try {
@@ -96,7 +89,6 @@ if (isset($_GET['toggle'])) {
     }
 }
 
-// 🟢 Fetch all announcements
 try {
     $stmt = $pdo->query("SELECT * FROM announcements ORDER BY posted_at DESC");
     $announcements = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -124,7 +116,6 @@ try {
     }
     ?>
 
-    <!-- Add / Edit Form -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <form method="POST">
@@ -148,7 +139,6 @@ try {
         </div>
     </div>
 
-    <!-- Announcements Table -->
     <div class="card shadow-sm">
         <div class="card-body">
             <table class="table table-striped table-hover align-middle">

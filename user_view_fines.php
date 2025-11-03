@@ -14,7 +14,7 @@ try {
     ");
     $fines = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die('❌ Database Error: ' . htmlspecialchars($e->getMessage()));
+    die('Database Error: ' . htmlspecialchars($e->getMessage()));
 }
 ?>
 
@@ -29,7 +29,7 @@ try {
 <div class="container py-4">
     <h3 class="text-center mb-4">💰 Student Fines Record</h3>
 
-    <!-- 🔍 Search Bar -->
+    <!--Search Bar -->
     <div class="d-flex justify-content-center mb-3">
         <input 
             type="text" 
@@ -39,7 +39,7 @@ try {
         >
     </div>
 
-    <!-- 📋 Table -->
+    <!--Table -->
     <table class="table table-bordered table-striped" id="finesTable">
         <thead class="table-dark text-center">
             <tr>
@@ -67,7 +67,7 @@ try {
         </tbody>
     </table>
 
-    <!-- 🟢 Back to Dashboard -->
+    <!--Back to Dashboard -->
     <div class="text-center mt-4">
         <a href="user-dashboard.php" class="btn btn-secondary">⬅ Back to Dashboard</a>
     </div>

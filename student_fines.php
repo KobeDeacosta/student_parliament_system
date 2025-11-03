@@ -2,13 +2,13 @@
 session_start();
 include('dbconnection.php');
 
-// 🔒 Require login
+//Require login
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-// 🧾 Fetch fines for this student
+// 🧾 Fetch ng fines sa student
 try {
     $stmt = $pdo->prepare("SELECT * FROM students_fines WHERE user_id = ?");
     $stmt->execute([$_SESSION['user_id']]);

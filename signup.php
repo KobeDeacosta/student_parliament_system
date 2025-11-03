@@ -8,11 +8,10 @@ if (isset($_POST['btnSignup'])) {
     $id_number = trim($_POST['id_number']);
     $fullname = trim($_POST['fullname']);
     $email = trim($_POST['email']);
-    $department_id = trim($_POST['department_id']); // from dropdown
+    $department_id = trim($_POST['department_id']);
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
 
-    // Validation
     if (empty($id_number) || empty($fullname) || empty($email) || empty($department_id) || empty($password) || empty($confirm_password)) {
         $_SESSION['msg'] = "All fields are required!";
         header("Location: signup.php");
@@ -26,7 +25,6 @@ if (isset($_POST['btnSignup'])) {
     }
 
     try {
-        // Check duplicates
         $check = $pdo->prepare("SELECT * FROM users WHERE email = ? OR id_number = ?");
         $check->execute([$email, $id_number]);
 
@@ -36,16 +34,13 @@ if (isset($_POST['btnSignup'])) {
             exit();
         }
 
-        // Get department name from departments table
         $deptStmt = $pdo->prepare("SELECT department_name FROM departments WHERE id = ?");
         $deptStmt->execute([$department_id]);
         $deptRow = $deptStmt->fetch(PDO::FETCH_ASSOC);
         $department_name = $deptRow ? $deptRow['department_name'] : 'N/A';
 
-        // Hash password
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        // Insert user (with fullname + department_id)
         $stmt = $pdo->prepare("
             INSERT INTO users (id_number, username, email, department, department_id, password, role)
             VALUES (?, ?, ?, ?, ?, ?, 'student')
@@ -54,7 +49,7 @@ if (isset($_POST['btnSignup'])) {
 
         $user_id = $pdo->lastInsertId();
 
-        // Generate QR Code
+        // pang Generate ng QR Code
         $qrDir = "qrcodes/";
         if (!file_exists($qrDir)) mkdir($qrDir, 0777, true);
 
@@ -66,13 +61,13 @@ if (isset($_POST['btnSignup'])) {
         $update = $pdo->prepare("UPDATE users SET qr_code = ? WHERE id = ?");
         $update->execute([$qrFile, $user_id]);
 
-        // ✅ AUTO LOGIN after successful signup
+        // ito ay para magrekta log in na
         $_SESSION['user_id'] = $user_id;
         $_SESSION['username'] = $fullname;
         $_SESSION['role'] = 'student';
         $_SESSION['department_id'] = $department_id;
 
-        header("Location: user-dashboard.php"); // Redirect to dashboard
+        header("Location: user-dashboard.php");
         exit();
 
     } catch (PDOException $e) {

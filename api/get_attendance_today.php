@@ -4,7 +4,7 @@ include('../dbconnection.php');
 $department = isset($_GET['department']) ? trim($_GET['department']) : '';
 
 try {
-    // ✅ Base query for attendance records (grouped per user, event, and date)
+    
     $query = "
         SELECT 
             u.username AS name,
@@ -20,7 +20,6 @@ try {
         INNER JOIN institutional_events ie ON a.event_id = ie.id
     ";
 
-    // ✅ Filter by department if not "All" or empty
     if ($department !== '' && $department !== 'All') {
         $query .= " WHERE u.department = :department";
     }
